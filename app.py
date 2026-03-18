@@ -593,11 +593,11 @@ def transcribe_long_audio(audio_path, config, user_id):
     all_transcriptions = []
     previous_context = ""
 
-    for i, segment_path in enumerate(segments):
-        offset_seconds = i * segment_duration
-        add_log(user_id, f"Transcribiendo parte {i+1}/{len(segments)} (desde {offset_seconds//60}:{offset_seconds%60:02d})...")
+    try:
+        for i, segment_path in enumerate(segments):
+            offset_seconds = i * segment_duration
+            add_log(user_id, f"Transcribiendo parte {i+1}/{len(segments)} (desde {offset_seconds//60}:{offset_seconds%60:02d})...")
 
-        try:
             text = transcribe_with_gemini(
                 segment_path, config, user_id,
                 previous_context=previous_context if i > 0 else ""
@@ -610,10 +610,10 @@ def transcribe_long_audio(audio_path, config, user_id):
                 text = adjust_timestamps(text, offset_seconds)
 
             all_transcriptions.append(text)
-
-        except Exception as e:
-            add_log(user_id, f"Error en parte {i+1}: {e}", "error")
-            all_transcriptions.append(f"\n[Error en parte {i+1}: {e}]\n")
+    except Exception as e:
+        cleanup_segments(segments, audio_path)
+        add_log(user_id, f"Fallo en parte {i+1}/{len(segments)} despues de reintentos. Transcripcion cancelada.", "error")
+        raise Exception(f"Transcripcion incompleta: fallo en parte {i+1}/{len(segments)}: {e}")
 
     cleanup_segments(segments, audio_path)
 

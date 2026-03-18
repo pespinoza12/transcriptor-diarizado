@@ -646,59 +646,178 @@ def process_files(config, user_id):
 
     add_log(user_id, f"Encontrados {len(audio_files)} archivos")
 
-    for i, file_info in enumerate(audio_files):
-        with state_lock:
-            if state["should_stop"]:
-                add_log(user_id, "Procesamiento detenido por el usuario")
-                break
-            state["current_file"] = file_info["name"]
-            state["progress"] = int((i / len(audio_files)) * 100)
+    merge_mode = config.get("unir_reunion", False)
 
-        file_path = user_dir / file_info["name"]
-        add_log(user_id, f"Procesando [{i+1}/{len(audio_files)}]: {file_info['name']}")
+    if merge_mode and len(audio_files) > 1:
+        # === MODO REUNION UNIFICADA ===
+        add_log(user_id, f"Modo reunion unificada: {len(audio_files)} archivos")
+        all_names = [f["name"] for f in audio_files]
+        all_transcriptions = []
+        total_duration = 0
+        previous_context = ""
+        accumulated_offset = 0
 
         try:
-            mp3_path = convert_to_mp3(file_path)
-            if mp3_path is None:
-                add_log(user_id, f"No se pudo convertir {file_info['name']}", "error")
-                continue
+            for i, file_info in enumerate(audio_files):
+                with state_lock:
+                    if state["should_stop"]:
+                        add_log(user_id, "Procesamiento detenido por el usuario")
+                        raise Exception("Detenido por el usuario")
+                    state["current_file"] = file_info["name"]
+                    state["progress"] = int((i / len(audio_files)) * 100)
 
-            add_log(user_id, "Transcribiendo con Gemini...")
-            transcription_text, duration_mins = transcribe_long_audio(mp3_path, config, user_id)
-            cleaned_text = clean_transcription(transcription_text)
-            add_log(user_id, "Transcripcion completada")
+                file_path = user_dir / file_info["name"]
+                add_log(user_id, f"Parte [{i+1}/{len(audio_files)}]: {file_info['name']}")
 
-            # Guardar en base de datos
-            conn = get_db()
-            try:
-                with conn.cursor() as cur:
-                    cur.execute(
-                        """INSERT INTO transcripciones (usuario_id, archivo, transcripcion, tipo_audio, duracion_minutos)
-                           VALUES (%s, %s, %s, %s, %s)""",
-                        (user_id, file_info["name"], cleaned_text,
-                         config.get("tipo_audio", "telemarketing"), duration_mins)
+                mp3_path = convert_to_mp3(file_path)
+                if mp3_path is None:
+                    raise Exception(f"No se pudo convertir {file_info['name']}")
+
+                file_duration = get_audio_duration(mp3_path)
+                total_duration += file_duration
+
+                # Transcribir cada archivo (puede dividirse internamente si es largo)
+                # Para archivos individuales, transcribimos directo con contexto previo
+                duration = get_audio_duration(mp3_path)
+                segment_duration = 480
+
+                if duration <= segment_duration:
+                    text = transcribe_with_gemini(
+                        mp3_path, config, user_id,
+                        previous_context=previous_context if i > 0 else ""
                     )
-                conn.commit()
-                add_log(user_id, f"Guardado en base de datos: {file_info['name']}")
-            finally:
-                conn.close()
+                else:
+                    # Archivo largo: dividir internamente
+                    segments = split_audio(mp3_path, segment_duration)
+                    if not segments:
+                        raise Exception(f"No se pudieron crear segmentos de {file_info['name']}")
 
-            # BORRAR audio original (ya no se necesita)
-            try:
-                os.remove(str(file_path))
-                if mp3_path != str(file_path) and Path(mp3_path).exists():
-                    os.remove(mp3_path)
-                add_log(user_id, f"Audio eliminado: {file_info['name']}")
-            except Exception as e:
-                logging.warning(f"No se pudo borrar audio: {e}")
+                    part_texts = []
+                    for j, seg_path in enumerate(segments):
+                        seg_offset = j * segment_duration
+                        add_log(user_id, f"  Sub-parte {j+1}/{len(segments)}...")
 
-            with state_lock:
-                state["processed_files"] += 1
-                state["last_transcription"] = cleaned_text
+                        seg_text = transcribe_with_gemini(
+                            seg_path, config, user_id,
+                            previous_context=previous_context if (i > 0 or j > 0) else ""
+                        )
+
+                        if i == 0 and j == 0:
+                            previous_context = extract_speaker_context(seg_text, config)
+
+                        if seg_offset > 0:
+                            seg_text = adjust_timestamps(seg_text, seg_offset)
+
+                        part_texts.append(seg_text)
+
+                    cleanup_segments(segments, mp3_path)
+                    text = "\n".join(part_texts)
+
+                # Actualizar contexto de hablantes (solo la primera vez)
+                if i == 0 and not previous_context:
+                    previous_context = extract_speaker_context(text, config)
+
+                # Ajustar timestamps con offset acumulado
+                if accumulated_offset > 0:
+                    text = adjust_timestamps(text, accumulated_offset)
+
+                all_transcriptions.append(f"--- {file_info['name']} ---\n{text}")
+                accumulated_offset += int(file_duration)
+
+                # Borrar audio procesado
+                try:
+                    os.remove(str(file_path))
+                    if mp3_path != str(file_path) and Path(mp3_path).exists():
+                        os.remove(mp3_path)
+                except:
+                    pass
+
+                with state_lock:
+                    state["processed_files"] += 1
 
         except Exception as e:
-            add_log(user_id, f"Error procesando {file_info['name']}: {e}", "error")
+            add_log(user_id, f"Error en reunion unificada: {e}", "error")
             logging.exception(e)
+            with state_lock:
+                state["is_running"] = False
+                state["current_file"] = None
+            return
+
+        # Guardar transcripcion unificada
+        merged_text = clean_transcription("\n\n".join(all_transcriptions))
+        merged_name = " + ".join(all_names)
+        duration_mins = int(total_duration / 60)
+
+        conn = get_db()
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """INSERT INTO transcripciones (usuario_id, archivo, transcripcion, tipo_audio, duracion_minutos)
+                       VALUES (%s, %s, %s, %s, %s)""",
+                    (user_id, merged_name, merged_text,
+                     config.get("tipo_audio", "telemarketing"), duration_mins)
+                )
+            conn.commit()
+            add_log(user_id, f"Reunion unificada guardada: {len(audio_files)} partes, {duration_mins} min")
+        finally:
+            conn.close()
+
+        with state_lock:
+            state["last_transcription"] = merged_text
+
+    else:
+        # === MODO INDIVIDUAL (cada archivo por separado) ===
+        for i, file_info in enumerate(audio_files):
+            with state_lock:
+                if state["should_stop"]:
+                    add_log(user_id, "Procesamiento detenido por el usuario")
+                    break
+                state["current_file"] = file_info["name"]
+                state["progress"] = int((i / len(audio_files)) * 100)
+
+            file_path = user_dir / file_info["name"]
+            add_log(user_id, f"Procesando [{i+1}/{len(audio_files)}]: {file_info['name']}")
+
+            try:
+                mp3_path = convert_to_mp3(file_path)
+                if mp3_path is None:
+                    add_log(user_id, f"No se pudo convertir {file_info['name']}", "error")
+                    continue
+
+                add_log(user_id, "Transcribiendo con Gemini...")
+                transcription_text, duration_mins = transcribe_long_audio(mp3_path, config, user_id)
+                cleaned_text = clean_transcription(transcription_text)
+                add_log(user_id, "Transcripcion completada")
+
+                conn = get_db()
+                try:
+                    with conn.cursor() as cur:
+                        cur.execute(
+                            """INSERT INTO transcripciones (usuario_id, archivo, transcripcion, tipo_audio, duracion_minutos)
+                               VALUES (%s, %s, %s, %s, %s)""",
+                            (user_id, file_info["name"], cleaned_text,
+                             config.get("tipo_audio", "telemarketing"), duration_mins)
+                        )
+                    conn.commit()
+                    add_log(user_id, f"Guardado en base de datos: {file_info['name']}")
+                finally:
+                    conn.close()
+
+                try:
+                    os.remove(str(file_path))
+                    if mp3_path != str(file_path) and Path(mp3_path).exists():
+                        os.remove(mp3_path)
+                    add_log(user_id, f"Audio eliminado: {file_info['name']}")
+                except Exception as e:
+                    logging.warning(f"No se pudo borrar audio: {e}")
+
+                with state_lock:
+                    state["processed_files"] += 1
+                    state["last_transcription"] = cleaned_text
+
+            except Exception as e:
+                add_log(user_id, f"Error procesando {file_info['name']}: {e}", "error")
+                logging.exception(e)
 
     # Limpiar carpeta del usuario si esta vacia
     try:

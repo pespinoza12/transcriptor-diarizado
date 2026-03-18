@@ -484,6 +484,17 @@
                             <input type="text" id="nombres" placeholder="Ej: Pedro, Maria, Juan...">
                         </div>
 
+                        <div class="form-group" style="margin-top:12px">
+                            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;color:#ccc">
+                                <input type="checkbox" id="unirReunion" style="width:auto;accent-color:#00d4ff">
+                                Unir todos como una sola reunion
+                            </label>
+                            <small style="color:#666;margin-top:4px;display:block">
+                                Activa esto si los archivos son partes de la misma reunion.
+                                Se generara una sola transcripcion unificada.
+                            </small>
+                        </div>
+
                         <div class="buttons-row">
                             <button class="btn btn-primary" id="btnIniciar" onclick="startProcessing()">Transcribir</button>
                             <button class="btn btn-danger" id="btnParar" onclick="stopProcessing()" disabled>Parar</button>
@@ -721,6 +732,7 @@
             const config = {
                 tipo_audio: document.getElementById('tipoAudio').value,
                 num_participantes: parseInt(document.getElementById('numParticipantes').value),
+                unir_reunion: document.getElementById('unirReunion').checked,
                 nombres: {}
             };
 

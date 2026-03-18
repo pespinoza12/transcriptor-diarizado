@@ -13,4 +13,8 @@ RUN mkdir -p whatsapp_audios processados
 
 EXPOSE 5050
 
-CMD ["python", "app.py"]
+CMD ["gunicorn", "app:app", \
+     "--bind", "0.0.0.0:5050", \
+     "--workers", "1", \
+     "--threads", "4", \
+     "--timeout", "600"]

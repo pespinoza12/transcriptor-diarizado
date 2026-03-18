@@ -389,43 +389,59 @@ Usa este formato exacto:
 
 Ahora transcribe el audio completo:"""
 
-    add_log(user_id, "Subiendo audio a Gemini...")
+    max_retries = 3
 
-    try:
-        audio_file = genai.upload_file(audio_path)
-
-        while audio_file.state.name == "PROCESSING":
-            add_log(user_id, "Procesando audio en Gemini...")
-            time.sleep(2)
-            audio_file = genai.get_file(audio_file.name)
-
-        if audio_file.state.name == "FAILED":
-            raise Exception("Error procesando archivo en Gemini")
-
-        add_log(user_id, "Generando transcripcion...")
-
-        model = genai.GenerativeModel(
-            model_name="gemini-2.5-flash",
-            generation_config={"temperature": 0.1, "max_output_tokens": 8192}
-        )
-
-        response = model.generate_content(
-            [prompt, audio_file],
-            request_options={"timeout": 600}
-        )
-
-        transcription_text = response.text
-
+    for attempt in range(1, max_retries + 1):
         try:
-            genai.delete_file(audio_file.name)
-        except:
-            pass
+            add_log(user_id, f"Subiendo audio a Gemini...{' (reintento ' + str(attempt) + ')' if attempt > 1 else ''}")
 
-        return transcription_text
+            audio_file = genai.upload_file(audio_path)
 
-    except Exception as e:
-        add_log(user_id, f"Error en Gemini: {e}", "error")
-        raise
+            while audio_file.state.name == "PROCESSING":
+                add_log(user_id, "Procesando audio en Gemini...")
+                time.sleep(2)
+                audio_file = genai.get_file(audio_file.name)
+
+            if audio_file.state.name == "FAILED":
+                raise Exception("Error procesando archivo en Gemini")
+
+            add_log(user_id, "Generando transcripcion...")
+
+            model = genai.GenerativeModel(
+                model_name="gemini-2.5-flash",
+                generation_config={"temperature": 0.1, "max_output_tokens": 8192}
+            )
+
+            response = model.generate_content(
+                [prompt, audio_file],
+                request_options={"timeout": 600}
+            )
+
+            transcription_text = response.text
+
+            try:
+                genai.delete_file(audio_file.name)
+            except:
+                pass
+
+            return transcription_text
+
+        except Exception as e:
+            add_log(user_id, f"Error en Gemini (intento {attempt}/{max_retries}): {e}", "error")
+
+            # Limpiar archivo subido si existe
+            try:
+                genai.delete_file(audio_file.name)
+            except:
+                pass
+
+            if attempt < max_retries:
+                wait = attempt * 10  # 10s, 20s
+                add_log(user_id, f"Reintentando en {wait} segundos...")
+                time.sleep(wait)
+            else:
+                add_log(user_id, f"Fallo despues de {max_retries} intentos", "error")
+                raise
 
 
 def clean_transcription(text):

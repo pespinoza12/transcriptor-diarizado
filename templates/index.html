@@ -29,16 +29,16 @@
             margin-bottom: 30px;
         }
 
-        header .title h1 {
-            font-size: 2rem;
-            color: #00d4ff;
-            margin-bottom: 4px;
+        header .title h1 { font-size: 2rem; color: #00d4ff; margin-bottom: 4px; }
+        header .title p { color: #888; font-size: 0.9rem; }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        header .title p {
-            color: #888;
-            font-size: 0.9rem;
-        }
+        .user-name { color: #aaa; font-size: 0.9rem; }
 
         .btn-logout {
             padding: 8px 16px;
@@ -57,6 +57,35 @@
             border-color: #ff4757;
             color: #ff4757;
         }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 25px;
+        }
+
+        .tab {
+            padding: 10px 24px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            color: #888;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .tab:hover { color: #ccc; }
+        .tab.active {
+            background: rgba(0, 212, 255, 0.1);
+            color: #00d4ff;
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
         .main-grid {
             display: grid;
@@ -95,35 +124,15 @@
             background: rgba(0, 212, 255, 0.05);
         }
 
-        .upload-zone .upload-icon {
-            font-size: 2rem;
-            margin-bottom: 8px;
-        }
-
-        .upload-zone .upload-text {
-            color: #888;
-            font-size: 0.9rem;
-        }
-
-        .upload-zone .upload-text strong {
-            color: #00d4ff;
-        }
-
+        .upload-zone .upload-icon { font-size: 2rem; margin-bottom: 8px; }
+        .upload-zone .upload-text { color: #888; font-size: 0.9rem; }
+        .upload-zone .upload-text strong { color: #00d4ff; }
         .upload-zone input { display: none; }
 
-        .form-group {
-            margin-bottom: 18px;
-        }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 6px; color: #aaa; font-size: 0.9rem; }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            color: #aaa;
-            font-size: 0.9rem;
-        }
-
-        .form-group select,
-        .form-group input {
+        .form-group select, .form-group input {
             width: 100%;
             padding: 10px 12px;
             background: rgba(0, 0, 0, 0.3);
@@ -133,8 +142,7 @@
             font-size: 0.95rem;
         }
 
-        .form-group select:focus,
-        .form-group input:focus {
+        .form-group select:focus, .form-group input:focus {
             outline: none;
             border-color: #00d4ff;
         }
@@ -152,45 +160,15 @@
             gap: 8px;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #00d4ff, #0099cc);
-            color: #000;
-        }
+        .btn-primary { background: linear-gradient(135deg, #00d4ff, #0099cc); color: #000; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3); }
+        .btn-danger { background: linear-gradient(135deg, #ff4757, #c0392b); color: #fff; }
+        .btn-secondary { background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid #444; }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.15); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3);
-        }
+        .buttons-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
 
-        .btn-danger {
-            background: linear-gradient(135deg, #ff4757, #c0392b);
-            color: #fff;
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            border: 1px solid #444;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        .buttons-row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-
-        /* Files list */
         .files-section { margin-top: 25px; }
 
         .files-list {
@@ -220,21 +198,10 @@
         }
 
         .file-size { color: #666; }
+        .no-files { text-align: center; color: #666; padding: 20px; }
 
-        .no-files {
-            text-align: center;
-            color: #666;
-            padding: 20px;
-        }
+        .right-panel { display: flex; flex-direction: column; gap: 20px; }
 
-        /* Right panel */
-        .right-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        /* Progress */
         .progress-section { display: none; }
         .progress-section.active { display: block; }
 
@@ -254,19 +221,9 @@
             width: 0%;
         }
 
-        .progress-info {
-            display: flex;
-            justify-content: space-between;
-            color: #888;
-            font-size: 0.9rem;
-        }
+        .progress-info { display: flex; justify-content: space-between; color: #888; font-size: 0.9rem; }
+        .current-file { color: #00d4ff; font-weight: 500; }
 
-        .current-file {
-            color: #00d4ff;
-            font-weight: 500;
-        }
-
-        /* Log */
         .log-container {
             background: rgba(0, 0, 0, 0.3);
             border-radius: 8px;
@@ -282,7 +239,6 @@
         .log-info { color: #00d4ff; }
         .log-error { color: #ff4757; }
 
-        /* Transcription preview */
         .transcription-preview {
             background: rgba(0, 0, 0, 0.3);
             border-radius: 8px;
@@ -299,56 +255,126 @@
             color: #555;
         }
 
-        /* Results */
-        .results-list {
-            max-height: 250px;
-            overflow-y: auto;
-        }
+        /* Historial */
+        .historial-list { display: flex; flex-direction: column; gap: 8px; }
 
-        .result-item {
+        .historial-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 10px;
-            border-bottom: 1px solid #333;
-            font-size: 0.85rem;
-        }
-
-        .result-item:last-child { border-bottom: none; }
-
-        .result-name {
-            color: #ccc;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            flex: 1;
-            margin-right: 10px;
-        }
-
-        .result-meta {
-            color: #666;
-            white-space: nowrap;
-            margin-right: 10px;
-            font-size: 0.8rem;
-        }
-
-        .btn-download {
-            padding: 4px 10px;
-            background: rgba(0, 212, 255, 0.2);
-            border: 1px solid #00d4ff;
-            color: #00d4ff;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            text-decoration: none;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border: 1px solid #333;
             transition: all 0.2s;
         }
 
-        .btn-download:hover {
-            background: rgba(0, 212, 255, 0.3);
+        .historial-item:hover { border-color: #555; }
+
+        .historial-info {
+            flex: 1;
+            cursor: pointer;
         }
 
-        /* Status */
+        .historial-archivo {
+            color: #ccc;
+            font-weight: 500;
+            margin-bottom: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 500px;
+        }
+
+        .historial-meta {
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        .historial-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: 1px solid;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-view {
+            background: rgba(0, 212, 255, 0.15);
+            border-color: rgba(0, 212, 255, 0.4);
+            color: #00d4ff;
+        }
+
+        .btn-view:hover { background: rgba(0, 212, 255, 0.25); }
+
+        .btn-delete {
+            background: rgba(255, 71, 87, 0.15);
+            border-color: rgba(255, 71, 87, 0.4);
+            color: #ff4757;
+        }
+
+        .btn-delete:hover { background: rgba(255, 71, 87, 0.25); }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: #1a1a2e;
+            border: 1px solid #333;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #333;
+        }
+
+        .modal-header h3 { color: #00d4ff; font-size: 1rem; }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-close:hover { color: #fff; }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            flex: 1;
+        }
+
         .status-badge {
             display: inline-flex;
             align-items: center;
@@ -359,35 +385,23 @@
             margin-bottom: 15px;
         }
 
-        .status-idle {
-            background: rgba(100, 100, 100, 0.3);
-            color: #888;
-        }
-
-        .status-running {
-            background: rgba(0, 212, 255, 0.2);
-            color: #00d4ff;
-        }
+        .status-idle { background: rgba(100, 100, 100, 0.3); color: #888; }
+        .status-running { background: rgba(0, 212, 255, 0.2); color: #00d4ff; }
 
         .status-dot {
-            width: 8px;
-            height: 8px;
+            width: 8px; height: 8px;
             border-radius: 50%;
             background: currentColor;
         }
 
-        .status-running .status-dot {
-            animation: pulse 1s infinite;
-        }
+        .status-running .status-dot { animation: pulse 1s infinite; }
 
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.3; }
         }
 
-        @media (max-width: 900px) {
-            .main-grid { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
 
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 3px; }
@@ -402,120 +416,136 @@
                 <h1>Transcriptor Diarizado</h1>
                 <p>Transcripcion de audios con Gemini</p>
             </div>
-            <a href="/logout" class="btn-logout">Salir</a>
+            <div class="header-right">
+                <span class="user-name">{{ nombre }}</span>
+                <a href="/logout" class="btn-logout">Salir</a>
+            </div>
         </header>
 
-        <div class="main-grid">
-            <!-- Left panel -->
-            <div class="left-panel">
-                <div class="card">
-                    <h2>Subir audios</h2>
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('transcribir')">Transcribir</div>
+            <div class="tab" onclick="switchTab('historial')">Historial</div>
+        </div>
 
-                    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
-                        <div class="upload-icon">&#128190;</div>
-                        <div class="upload-text">
-                            <strong>Click para seleccionar</strong> o arrastra archivos aqui<br>
-                            <small>MP3, WAV, OGG, M4A, MP4...</small>
+        <!-- Tab: Transcribir -->
+        <div class="tab-content active" id="tab-transcribir">
+            <div class="main-grid">
+                <div class="left-panel">
+                    <div class="card">
+                        <h2>Subir audios</h2>
+
+                        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+                            <div class="upload-icon">&#128190;</div>
+                            <div class="upload-text">
+                                <strong>Click para seleccionar</strong> o arrastra archivos aqui<br>
+                                <small>MP3, WAV, OGG, M4A, MP4...</small>
+                            </div>
+                            <input type="file" id="fileInput" multiple
+                                   accept=".mp3,.wav,.ogg,.opus,.m4a,.mp4,.mkv,.webm">
                         </div>
-                        <input type="file" id="fileInput" multiple
-                               accept=".mp3,.wav,.ogg,.opus,.m4a,.mp4,.mkv,.webm">
+
+                        <h2>Configuracion</h2>
+
+                        <div class="form-group">
+                            <label>Tipo de audio</label>
+                            <select id="tipoAudio">
+                                <option value="telemarketing">Telemarketing / Call Center</option>
+                                <option value="reunion">Reunion</option>
+                                <option value="conversacion">Conversacion informal</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Numero de participantes</label>
+                            <select id="numParticipantes">
+                                <option value="2">2 personas</option>
+                                <option value="3">3 personas</option>
+                                <option value="4">4 personas</option>
+                                <option value="5">5+ personas</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="nombreOperadorGroup">
+                            <label>Nombre del operador (opcional)</label>
+                            <input type="text" id="nombreOperador" placeholder="Ej: Maria, Juan...">
+                        </div>
+
+                        <div class="form-group" id="nombresGroup" style="display: none;">
+                            <label>Nombres de participantes (opcional)</label>
+                            <input type="text" id="nombres" placeholder="Ej: Pedro, Maria, Juan...">
+                        </div>
+
+                        <div class="buttons-row">
+                            <button class="btn btn-primary" id="btnIniciar" onclick="startProcessing()">Transcribir</button>
+                            <button class="btn btn-danger" id="btnParar" onclick="stopProcessing()" disabled>Parar</button>
+                            <button class="btn btn-secondary" onclick="refreshFiles()">Actualizar</button>
+                        </div>
                     </div>
 
-                    <h2>Configuracion</h2>
-
-                    <div class="form-group">
-                        <label>Tipo de audio</label>
-                        <select id="tipoAudio">
-                            <option value="telemarketing">Telemarketing / Call Center</option>
-                            <option value="reunion">Reunion</option>
-                            <option value="conversacion">Conversacion informal</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Numero de participantes</label>
-                        <select id="numParticipantes">
-                            <option value="2">2 personas</option>
-                            <option value="3">3 personas</option>
-                            <option value="4">4 personas</option>
-                            <option value="5">5+ personas</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" id="nombreOperadorGroup">
-                        <label>Nombre del operador (opcional)</label>
-                        <input type="text" id="nombreOperador" placeholder="Ej: Maria, Juan...">
-                    </div>
-
-                    <div class="form-group" id="nombresGroup" style="display: none;">
-                        <label>Nombres de participantes (opcional)</label>
-                        <input type="text" id="nombres" placeholder="Ej: Pedro, Maria, Juan...">
-                    </div>
-
-                    <div class="buttons-row">
-                        <button class="btn btn-primary" id="btnIniciar" onclick="startProcessing()">
-                            Transcribir
-                        </button>
-                        <button class="btn btn-danger" id="btnParar" onclick="stopProcessing()" disabled>
-                            Parar
-                        </button>
-                        <button class="btn btn-secondary" onclick="refreshFiles()">
-                            Actualizar
-                        </button>
+                    <div class="card files-section">
+                        <h2>Archivos pendientes <span id="fileCount">(0)</span></h2>
+                        <div class="files-list" id="filesList">
+                            <div class="no-files">Cargando...</div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="card files-section">
-                    <h2>Archivos pendientes <span id="fileCount">(0)</span></h2>
-                    <div class="files-list" id="filesList">
-                        <div class="no-files">Cargando...</div>
+                <div class="right-panel">
+                    <div class="card">
+                        <h2>Estado</h2>
+                        <div class="status-badge status-idle" id="statusBadge">
+                            <span class="status-dot"></span>
+                            <span id="statusText">Esperando</span>
+                        </div>
+                        <div class="progress-section" id="progressSection">
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" id="progressBar"></div>
+                            </div>
+                            <div class="progress-info">
+                                <span class="current-file" id="currentFile">-</span>
+                                <span id="progressText">0/0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>Log</h2>
+                        <div class="log-container" id="logContainer">
+                            <div class="log-entry">
+                                <span class="log-time">--:--:--</span>
+                                <span class="log-info">Sistema listo</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>Ultima Transcripcion</h2>
+                        <div class="transcription-preview" id="transcriptionPreview"></div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Right panel -->
-            <div class="right-panel">
-                <div class="card">
-                    <h2>Estado</h2>
-
-                    <div class="status-badge status-idle" id="statusBadge">
-                        <span class="status-dot"></span>
-                        <span id="statusText">Esperando</span>
-                    </div>
-
-                    <div class="progress-section" id="progressSection">
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" id="progressBar"></div>
-                        </div>
-                        <div class="progress-info">
-                            <span class="current-file" id="currentFile">-</span>
-                            <span id="progressText">0/0</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h2>Log</h2>
-                    <div class="log-container" id="logContainer">
-                        <div class="log-entry">
-                            <span class="log-time">--:--:--</span>
-                            <span class="log-info">Sistema listo</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h2>Ultima Transcripcion</h2>
-                    <div class="transcription-preview" id="transcriptionPreview"></div>
-                </div>
-
-                <div class="card">
-                    <h2>Resultados</h2>
-                    <div class="results-list" id="resultsList">
-                        <div class="no-files">Cargando...</div>
-                    </div>
+        <!-- Tab: Historial -->
+        <div class="tab-content" id="tab-historial">
+            <div class="card">
+                <h2>Historial de transcripciones</h2>
+                <div class="historial-list" id="historialList">
+                    <div class="no-files">Cargando...</div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal para ver transcripcion -->
+    <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Transcripcion</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
         </div>
     </div>
 
@@ -524,9 +554,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             refreshFiles();
-            refreshResults();
             setInterval(updateStatus, 1000);
-            setInterval(refreshResults, 10000);
 
             document.getElementById('tipoAudio').addEventListener('change', (e) => {
                 const isCall = e.target.value === 'telemarketing';
@@ -534,18 +562,10 @@
                 document.getElementById('nombresGroup').style.display = isCall ? 'none' : 'block';
             });
 
-            // Drag & drop
             const zone = document.getElementById('uploadZone');
-            zone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                zone.classList.add('dragover');
-            });
+            zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
             zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
-            zone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                zone.classList.remove('dragover');
-                uploadFiles(e.dataTransfer.files);
-            });
+            zone.addEventListener('drop', (e) => { e.preventDefault(); zone.classList.remove('dragover'); uploadFiles(e.dataTransfer.files); });
 
             document.getElementById('fileInput').addEventListener('change', (e) => {
                 uploadFiles(e.target.files);
@@ -553,22 +573,30 @@
             });
         });
 
-        const CHUNK_SIZE = 768 * 1024; // 768KB per chunk
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+
+            document.querySelector(`.tab-content#tab-${tab}`).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tab === 'historial') refreshHistorial();
+        }
+
+        // ---- Chunked Upload ----
+        const CHUNK_SIZE = 768 * 1024;
 
         async function uploadFiles(fileList) {
             if (!fileList.length) return;
-
             const zone = document.getElementById('uploadZone');
             let uploaded = 0;
 
             for (const file of fileList) {
                 zone.querySelector('.upload-text').innerHTML =
                     `<strong>Subiendo ${file.name}...</strong><br><small>0%</small>`;
-
                 try {
                     const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
 
-                    // 1. Start upload
                     const startRes = await fetch('/api/upload/start', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -576,12 +604,8 @@
                     });
                     const { upload_id } = await startRes.json();
 
-                    // 2. Send chunks
                     for (let i = 0; i < totalChunks; i++) {
-                        const start = i * CHUNK_SIZE;
-                        const end = Math.min(start + CHUNK_SIZE, file.size);
-                        const blob = file.slice(start, end);
-
+                        const blob = file.slice(i * CHUNK_SIZE, Math.min((i + 1) * CHUNK_SIZE, file.size));
                         const form = new FormData();
                         form.append('upload_id', upload_id);
                         form.append('chunk_index', i);
@@ -595,16 +619,13 @@
                             `<strong>Subiendo ${file.name}...</strong><br><small>${pct}%</small>`;
                     }
 
-                    // 3. Complete
                     const completeRes = await fetch('/api/upload/complete', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ upload_id })
                     });
-
                     if (!completeRes.ok) throw new Error('Error ensamblando archivo');
                     uploaded++;
-
                 } catch (err) {
                     zone.querySelector('.upload-text').innerHTML =
                         `<strong style="color:#ff4757">Error: ${err.message}</strong>`;
@@ -612,8 +633,7 @@
                 }
             }
 
-            zone.querySelector('.upload-text').innerHTML =
-                `<strong>${uploaded} archivo(s) subido(s)</strong>`;
+            zone.querySelector('.upload-text').innerHTML = `<strong>${uploaded} archivo(s) subido(s)</strong>`;
             refreshFiles();
             setTimeout(() => {
                 zone.querySelector('.upload-text').innerHTML =
@@ -621,6 +641,7 @@
             }, 3000);
         }
 
+        // ---- Status ----
         async function updateStatus() {
             try {
                 const res = await fetch('/api/status');
@@ -628,7 +649,6 @@
                 const data = await res.json();
 
                 isRunning = data.is_running;
-
                 document.getElementById('btnIniciar').disabled = isRunning;
                 document.getElementById('btnParar').disabled = !isRunning;
 
@@ -646,80 +666,46 @@
 
                 document.getElementById('progressBar').style.width = data.progress + '%';
                 document.getElementById('currentFile').textContent = data.current_file || '-';
-                document.getElementById('progressText').textContent =
-                    `${data.processed_files}/${data.total_files}`;
+                document.getElementById('progressText').textContent = `${data.processed_files}/${data.total_files}`;
 
                 if (data.logs && data.logs.length > 0) {
                     const logContainer = document.getElementById('logContainer');
-                    logContainer.innerHTML = data.logs.map(log => `
-                        <div class="log-entry">
-                            <span class="log-time">${log.time}</span>
-                            <span class="log-${log.level}">${log.message}</span>
-                        </div>
-                    `).join('');
+                    logContainer.innerHTML = data.logs.map(log =>
+                        `<div class="log-entry"><span class="log-time">${log.time}</span><span class="log-${log.level}">${log.message}</span></div>`
+                    ).join('');
                     logContainer.scrollTop = logContainer.scrollHeight;
                 }
 
                 if (data.last_transcription) {
-                    document.getElementById('transcriptionPreview').textContent =
-                        data.last_transcription;
+                    document.getElementById('transcriptionPreview').textContent = data.last_transcription;
                 }
 
-                if (!isRunning && data.processed_files > 0) {
-                    refreshFiles();
-                    refreshResults();
-                }
-
+                if (!isRunning && data.processed_files > 0) refreshFiles();
             } catch (err) {
                 console.error('Status error:', err);
             }
         }
 
+        // ---- Files ----
         async function refreshFiles() {
             try {
                 const res = await fetch('/api/files');
                 const data = await res.json();
 
                 document.getElementById('fileCount').textContent = `(${data.total})`;
-
                 const list = document.getElementById('filesList');
+
                 if (data.files.length === 0) {
                     list.innerHTML = '<div class="no-files">No hay archivos pendientes</div>';
                 } else {
-                    list.innerHTML = data.files.map(f => `
-                        <div class="file-item">
-                            <span class="file-name" title="${f.name}">${f.name}</span>
-                            <span class="file-size">${f.size_mb} MB</span>
-                        </div>
-                    `).join('');
+                    list.innerHTML = data.files.map(f =>
+                        `<div class="file-item"><span class="file-name" title="${f.name}">${f.name}</span><span class="file-size">${f.size_mb} MB</span></div>`
+                    ).join('');
                 }
-            } catch (err) {
-                console.error('Files error:', err);
-            }
+            } catch (err) { console.error('Files error:', err); }
         }
 
-        async function refreshResults() {
-            try {
-                const res = await fetch('/api/results');
-                const data = await res.json();
-
-                const list = document.getElementById('resultsList');
-                if (!data.results.length) {
-                    list.innerHTML = '<div class="no-files">Sin resultados aun</div>';
-                } else {
-                    list.innerHTML = data.results.map(r => `
-                        <div class="result-item">
-                            <span class="result-name" title="${r.name}">${r.name}</span>
-                            <span class="result-meta">${r.date}</span>
-                            <a href="/api/download/${encodeURIComponent(r.name)}" class="btn-download">Descargar</a>
-                        </div>
-                    `).join('');
-                }
-            } catch (err) {
-                console.error('Results error:', err);
-            }
-        }
-
+        // ---- Processing ----
         async function startProcessing() {
             const config = {
                 tipo_audio: document.getElementById('tipoAudio').value,
@@ -743,25 +729,68 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(config)
                 });
-
-                if (res.ok) {
-                    document.getElementById('progressSection').classList.add('active');
-                } else {
-                    const data = await res.json();
-                    alert(data.error || 'Error iniciando procesamiento');
-                }
-            } catch (err) {
-                alert('Error de conexion: ' + err.message);
-            }
+                if (res.ok) document.getElementById('progressSection').classList.add('active');
+                else { const data = await res.json(); alert(data.error); }
+            } catch (err) { alert('Error: ' + err.message); }
         }
 
         async function stopProcessing() {
-            try {
-                await fetch('/api/stop', { method: 'POST' });
-            } catch (err) {
-                console.error('Stop error:', err);
-            }
+            try { await fetch('/api/stop', { method: 'POST' }); } catch (err) { console.error(err); }
         }
+
+        // ---- Historial ----
+        async function refreshHistorial() {
+            try {
+                const res = await fetch('/api/historial');
+                const data = await res.json();
+                const list = document.getElementById('historialList');
+
+                if (!data.historial.length) {
+                    list.innerHTML = '<div class="no-files">Sin transcripciones aun</div>';
+                    return;
+                }
+
+                list.innerHTML = data.historial.map(h => `
+                    <div class="historial-item">
+                        <div class="historial-info" onclick="viewTranscripcion(${h.id}, '${h.archivo.replace(/'/g, "\\'")}')">
+                            <div class="historial-archivo">${h.archivo}</div>
+                            <div class="historial-meta">${h.fecha} &middot; ${h.tipo_audio} &middot; ${h.duracion_minutos || '?'} min</div>
+                        </div>
+                        <div class="historial-actions">
+                            <button class="btn-small btn-view" onclick="viewTranscripcion(${h.id}, '${h.archivo.replace(/'/g, "\\'")}')">Ver</button>
+                            <button class="btn-small btn-delete" onclick="deleteTranscripcion(${h.id})">Eliminar</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) { console.error('Historial error:', err); }
+        }
+
+        async function viewTranscripcion(id, archivo) {
+            try {
+                const res = await fetch(`/api/transcripcion/${id}`);
+                const data = await res.json();
+
+                document.getElementById('modalTitle').textContent = archivo;
+                document.getElementById('modalBody').textContent = data.transcripcion;
+                document.getElementById('modalOverlay').classList.add('active');
+            } catch (err) { alert('Error cargando transcripcion'); }
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+
+        async function deleteTranscripcion(id) {
+            if (!confirm('Eliminar esta transcripcion?')) return;
+            try {
+                await fetch(`/api/transcripcion/${id}`, { method: 'DELETE' });
+                refreshHistorial();
+            } catch (err) { console.error(err); }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
     </script>
 </body>
 </html>

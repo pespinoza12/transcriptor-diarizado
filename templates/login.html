@@ -47,8 +47,7 @@
             border-radius: 8px;
             color: #fff;
             font-size: 1rem;
-            margin-bottom: 16px;
-            text-align: center;
+            margin-bottom: 12px;
         }
 
         .login-card input:focus {
@@ -67,6 +66,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
+            margin-top: 4px;
         }
 
         .login-card button:hover {
@@ -84,11 +84,12 @@
 <body>
     <form class="login-card" method="POST">
         <h1>Transcriptor</h1>
-        <p>Ingresa la clave para continuar</p>
+        <p>Ingresa tus credenciales</p>
         {% if error %}
         <div class="error">{{ error }}</div>
         {% endif %}
-        <input type="password" name="password" placeholder="Clave de acceso" autofocus>
+        <input type="text" name="username" placeholder="Usuario" autocomplete="username" autofocus>
+        <input type="password" name="password" placeholder="Clave" autocomplete="current-password">
         <button type="submit">Entrar</button>
     </form>
 </body>

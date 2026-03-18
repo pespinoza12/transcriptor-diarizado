@@ -1,0 +1,8 @@
+.env
+*.log
+__pycache__/
+*.pyc
+whatsapp_audios/
+processados/
+temp_segments/
+*.bat

@@ -5,4 +5,7 @@ __pycache__/
 whatsapp_audios/
 processados/
 temp_segments/
+temp_uploads/
 *.bat
+.playwright-cli/
+test_tiny.mp3

@@ -553,37 +553,72 @@
             });
         });
 
+        const CHUNK_SIZE = 768 * 1024; // 768KB per chunk
+
         async function uploadFiles(fileList) {
             if (!fileList.length) return;
 
-            const formData = new FormData();
-            for (const f of fileList) {
-                formData.append('files', f);
-            }
-
             const zone = document.getElementById('uploadZone');
-            zone.querySelector('.upload-text').innerHTML = '<strong>Subiendo...</strong>';
+            let uploaded = 0;
 
-            try {
-                const res = await fetch('/api/upload', { method: 'POST', body: formData });
-                const data = await res.json();
-
-                if (res.ok) {
-                    zone.querySelector('.upload-text').innerHTML =
-                        `<strong>${data.count} archivo(s) subido(s)</strong>`;
-                    refreshFiles();
-                    setTimeout(() => {
-                        zone.querySelector('.upload-text').innerHTML =
-                            '<strong>Click para seleccionar</strong> o arrastra archivos aqui<br><small>MP3, WAV, OGG, M4A, MP4...</small>';
-                    }, 3000);
-                } else {
-                    zone.querySelector('.upload-text').innerHTML =
-                        `<strong style="color:#ff4757">Error: ${data.error}</strong>`;
-                }
-            } catch (err) {
+            for (const file of fileList) {
                 zone.querySelector('.upload-text').innerHTML =
-                    `<strong style="color:#ff4757">Error de conexion</strong>`;
+                    `<strong>Subiendo ${file.name}...</strong><br><small>0%</small>`;
+
+                try {
+                    const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+
+                    // 1. Start upload
+                    const startRes = await fetch('/api/upload/start', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ filename: file.name, total_chunks: totalChunks })
+                    });
+                    const { upload_id } = await startRes.json();
+
+                    // 2. Send chunks
+                    for (let i = 0; i < totalChunks; i++) {
+                        const start = i * CHUNK_SIZE;
+                        const end = Math.min(start + CHUNK_SIZE, file.size);
+                        const blob = file.slice(start, end);
+
+                        const form = new FormData();
+                        form.append('upload_id', upload_id);
+                        form.append('chunk_index', i);
+                        form.append('chunk', blob);
+
+                        const res = await fetch('/api/upload/chunk', { method: 'POST', body: form });
+                        if (!res.ok) throw new Error('Error en chunk ' + i);
+
+                        const pct = Math.round(((i + 1) / totalChunks) * 100);
+                        zone.querySelector('.upload-text').innerHTML =
+                            `<strong>Subiendo ${file.name}...</strong><br><small>${pct}%</small>`;
+                    }
+
+                    // 3. Complete
+                    const completeRes = await fetch('/api/upload/complete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ upload_id })
+                    });
+
+                    if (!completeRes.ok) throw new Error('Error ensamblando archivo');
+                    uploaded++;
+
+                } catch (err) {
+                    zone.querySelector('.upload-text').innerHTML =
+                        `<strong style="color:#ff4757">Error: ${err.message}</strong>`;
+                    return;
+                }
             }
+
+            zone.querySelector('.upload-text').innerHTML =
+                `<strong>${uploaded} archivo(s) subido(s)</strong>`;
+            refreshFiles();
+            setTimeout(() => {
+                zone.querySelector('.upload-text').innerHTML =
+                    '<strong>Click para seleccionar</strong> o arrastra archivos aqui<br><small>MP3, WAV, OGG, M4A, MP4...</small>';
+            }, 3000);
         }
 
         async function updateStatus() {

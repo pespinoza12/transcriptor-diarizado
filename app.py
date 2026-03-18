@@ -753,27 +753,91 @@ def get_files():
     })
 
 
-@app.route('/api/upload', methods=['POST'])
+@app.route('/api/upload/start', methods=['POST'])
 @login_required
-def upload_file():
-    """Sube archivos de audio."""
-    if 'files' not in request.files:
-        return jsonify({"error": "No se enviaron archivos"}), 400
+def upload_start():
+    """Inicia un upload chunked. Retorna un upload_id."""
+    data = request.json or {}
+    filename = Path(data.get('filename', 'audio.mp3')).name
+    total_chunks = data.get('total_chunks', 1)
 
-    uploaded = []
-    for f in request.files.getlist('files'):
-        if f.filename:
-            # Sanitizar nombre
-            filename = Path(f.filename).name
-            dest = INPUT_FOLDER / filename
-            f.save(str(dest))
-            uploaded.append(filename)
-            add_log(f"Archivo subido: {filename}")
+    upload_id = secrets.token_hex(8)
+    temp_dir = BASE_DIR / "temp_uploads" / upload_id
+    temp_dir.mkdir(parents=True, exist_ok=True)
 
-    return jsonify({
-        "uploaded": uploaded,
-        "count": len(uploaded)
-    })
+    # Guardar metadata
+    meta = {"filename": filename, "total_chunks": total_chunks, "received": 0}
+    with open(temp_dir / "meta.json", 'w') as f:
+        json.dump(meta, f)
+
+    return jsonify({"upload_id": upload_id})
+
+
+@app.route('/api/upload/chunk', methods=['POST'])
+@login_required
+def upload_chunk():
+    """Sube un chunk de archivo."""
+    upload_id = request.form.get('upload_id')
+    chunk_index = int(request.form.get('chunk_index', 0))
+
+    if not upload_id or 'chunk' not in request.files:
+        return jsonify({"error": "Datos incompletos"}), 400
+
+    temp_dir = BASE_DIR / "temp_uploads" / upload_id
+    if not temp_dir.exists():
+        return jsonify({"error": "Upload no encontrado"}), 404
+
+    # Guardar chunk
+    chunk = request.files['chunk']
+    chunk.save(str(temp_dir / f"chunk_{chunk_index:04d}"))
+
+    # Actualizar metadata
+    meta_path = temp_dir / "meta.json"
+    with open(meta_path) as f:
+        meta = json.load(f)
+    meta["received"] = chunk_index + 1
+    with open(meta_path, 'w') as f:
+        json.dump(meta, f)
+
+    return jsonify({"received": chunk_index + 1, "total": meta["total_chunks"]})
+
+
+@app.route('/api/upload/complete', methods=['POST'])
+@login_required
+def upload_complete():
+    """Ensambla los chunks en el archivo final."""
+    data = request.json or {}
+    upload_id = data.get('upload_id')
+
+    if not upload_id:
+        return jsonify({"error": "upload_id requerido"}), 400
+
+    temp_dir = BASE_DIR / "temp_uploads" / upload_id
+    if not temp_dir.exists():
+        return jsonify({"error": "Upload no encontrado"}), 404
+
+    meta_path = temp_dir / "meta.json"
+    with open(meta_path) as f:
+        meta = json.load(f)
+
+    filename = meta["filename"]
+    dest = INPUT_FOLDER / filename
+
+    # Ensamblar chunks
+    with open(dest, 'wb') as out:
+        for i in range(meta["total_chunks"]):
+            chunk_path = temp_dir / f"chunk_{i:04d}"
+            if not chunk_path.exists():
+                return jsonify({"error": f"Chunk {i} faltante"}), 400
+            with open(chunk_path, 'rb') as inp:
+                out.write(inp.read())
+
+    # Limpiar temp
+    shutil.rmtree(str(temp_dir), ignore_errors=True)
+
+    add_log(f"Archivo subido: {filename} ({dest.stat().st_size / (1024*1024):.1f} MB)")
+
+    return jsonify({"filename": filename, "size_mb": round(dest.stat().st_size / (1024*1024), 2)})
 
 
 @app.route('/api/start', methods=['POST'])

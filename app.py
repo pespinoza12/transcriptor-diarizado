@@ -92,19 +92,17 @@ def init_db():
                     fecha TIMESTAMP DEFAULT NOW()
                 )
             """)
-            # Crear usuario admin si no existe
-            cur.execute("SELECT id FROM usuarios WHERE username = 'pedro'")
-            if not cur.fetchone():
-                cur.execute(
-                    "INSERT INTO usuarios (username, password_hash, nombre) VALUES (%s, %s, %s)",
-                    ('pedro', generate_password_hash('Gabriel5214!'), 'Pedro')
-                )
-            cur.execute("SELECT id FROM usuarios WHERE username = 'gabi'")
-            if not cur.fetchone():
-                cur.execute(
-                    "INSERT INTO usuarios (username, password_hash, nombre) VALUES (%s, %s, %s)",
-                    ('gabi', generate_password_hash('Gabi2024!'), 'Gabriela')
-                )
+            # Crear usuarios iniciales si no existen
+            for uname, pwd, nombre in [
+                ('pedro', 'Gabriel5214!', 'Pedro'),
+                ('cbascunan', 'Gabriel5214!', 'Carolina'),
+            ]:
+                cur.execute("SELECT id FROM usuarios WHERE username = %s", (uname,))
+                if not cur.fetchone():
+                    cur.execute(
+                        "INSERT INTO usuarios (username, password_hash, nombre) VALUES (%s, %s, %s)",
+                        (uname, generate_password_hash(pwd), nombre)
+                    )
         conn.commit()
         logging.info("Base de datos inicializada")
     except Exception as e:
@@ -148,7 +146,8 @@ def login_required(f):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if session.get('user_id'):
+    # Verificar sesion existente valida
+    if session.get('user_id') and session.get('username'):
         return redirect(url_for('index'))
 
     error = None
@@ -163,6 +162,7 @@ def login():
                 user = cur.fetchone()
 
             if user and check_password_hash(user['password_hash'], password):
+                session.clear()  # Limpiar sesion vieja
                 session['user_id'] = user['id']
                 session['username'] = user['username']
                 session['nombre'] = user['nombre']
@@ -172,6 +172,10 @@ def login():
                 error = "Usuario o clave incorrecta"
         finally:
             conn.close()
+    else:
+        # GET: limpiar sesiones invalidas (sin username = sistema viejo)
+        if session.get('authenticated') and not session.get('username'):
+            session.clear()
 
     return render_template('login.html', error=error)
 
